@@ -1,2 +1,102 @@
+# must go first 
+%matplotlib inline 
+%config InlineBackend.figure_format='retina'
+
+# plotting
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import seaborn as sns
+sns.set_context("poster", font_scale=1.3)
+import folium
+
+# basic wrangling 
+import numpy as np
+import pandas as pd
+
+# system packages 
+import os, sys
+import warnings
+warnings.filterwarnings('ignore')
+
+# eda tools 
+import pivottablejs
+import missingno as msno
+import pandas_profiling
+
+# interactive 
+import ipywidgets as widgets
+
+# more technical eda
+import sklearn
+import scipy
+
 ######探索性数据分析-农粮数据分析######
-######target：
+######target：水的供应和用水是否与人均国内生产总值有关?######
+'''
+1.数据切片分析
+2.单变量分析
+3.峰度与偏度
+4.数据对数转化
+5.数据分析维度
+6.数据关系可视化展示
+'''
+# 1.数据切片分析
+data.info()
+data[['variable','variable_full']].drop_duplicates() # 展示所有变量以及变量名称
+data.country.nunique() # 不同值的个数
+data.country.unique() # 不同的值
+data[data.variable=='total_area'].value.isnull().sum() # 缺失值的个数
+
+# 数据量大，范围广，不同维度进行分析，没有明确的目标
+# 横截面：一个时期内所有国家
+# 时间序列：一个国家随着时间的推移
+# 面板数据：所有国家随着时间的推移（作为数据给出）
+# 地理空间：所有地理上相互联系的国家
+
+# time slice 时间(可换成其他变量)切片函数
+def time_slice(df, time_period):
+    # Only take data for time period of interest
+    df = df[df.time_period==time_period] 
+    # Pivot table 
+    df = df.pivot(index='country', columns='variable', values='value') # 将dataframe按照index-columns进行数据整理 
+    df.columns.name = time_period    
+    return df
+    
+# 注意：切片太细不利于观察，区域是一种直观的数据细分方式，如国家---区域
+# 提取单个区域的函数
+def subregion(data, region):
+    return data[data.region==region]
+
+# 2.单变量分析
+# 数据质量评估和分析：在试图了解数据中有哪些信息之前，请确保您理解了数据代表什么和丢失了什么
+msno.matrix(recent, labels=True)
+pandas_profiling.ProfileReport(time_slice(data, '2013-2017'))
+
+# 3.峰度与偏度
+'''
+Location: 均值，中位数，四分位
+Spread: 标准差、方差、极值
+Shape: 偏度、峰度
+'''
+recent[['total_pop', 'urban_pop', 'rural_pop']].describe().astype(int) # Location and Spread
+
+# 左偏：均值 < 中位数 ，负偏度，偏度小于0
+recent[['total_pop', 'urban_pop', 'rural_pop']].apply(scipy.stats.skew) # 偏度
+# The trusty histogram
+fig, ax = plt.subplots(figsize=(12, 8))
+ax.hist(recent.total_pop.values, bins=50);
+ax.set_xlabel('Total population');
+ax.set_ylabel('Number of countries');
+ax.set_title('Distribution of population of countries 2013-2017')
+
+recent[['total_pop', 'urban_pop', 'rural_pop']].apply(scipy.stats.kurtosis) # 峰度
+
+# 4.数据对数转化
+# 使用LOG转换将使变量更为正常
+
+
+# 5.数据分析维度
+
+# 6.数据关系可视化展示
+
+    
