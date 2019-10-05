@@ -93,7 +93,7 @@ recent[['total_pop', 'urban_pop', 'rural_pop']].apply(scipy.stats.kurtosis) # �
 
 # 4.数据对数转化
 # 使用LOG转换将使变量更为正常
-
+recent[['total_pop']].apply(np.log)
 
 # 5.数据分析维度
 
