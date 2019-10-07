@@ -1,0 +1,51 @@
+来源：哔哩哔哩-蓝亚之舟 
+code笔记：
+
+https://www.jianshu.com/p/af0bef2d6a30
+
+亮点：
+1.平面坐标转极坐标：以后用到详看
+
+2.pandas核心操作：
+kobe =  raw[pd.notnull(raw['shot_made_flag'])] # 选出测试数据，标签列不为空
+print(kobe.shot_type.unique())
+print(kobe.shot_type.value_counts())
+
+3.cm.rainbow 图：以后用到详看
+
+4.one-hot独热编码
+print (raw['combined_shot_type'].value_counts())
+pd.get_dummies(raw['combined_shot_type'], prefix='combined_shot_type')[0:2] # one-hot独热编码 prefix：前缀
+
+categorical_vars = ['action_type', 'combined_shot_type', 'shot_type', 'opponent', 'period', 'season'] # 列出所有string变量
+for var in categorical_vars:
+    raw = pd.concat([raw, pd.get_dummies(raw[var], prefix=var)], 1) # 独热编码切分完后需要拼接
+    raw = raw.drop(var, 1)
+
+5.画子图
+alpha = 0.02 # 透明度，alpha为0的时候画出的线或点是完全透明的,为1时是完全不透明的
+plt.figure(figsize=(10,10))
+
+# loc_x and loc_y
+plt.subplot(121) # 一行两列第一个图
+plt.scatter(kobe.loc_x, kobe.loc_y, color='R', alpha=alpha)
+plt.title('loc_x and loc_y')
+
+# lat and lon
+plt.subplot(122)
+plt.scatter(kobe.lon, kobe.lat, color='B', alpha=alpha)
+plt.title('lat and lon')
+
+6.匿名函数
+raw['season'] = raw['season'].apply(lambda x: int(x.split('-')[1]) ) #取出月份
+raw['season'].unique()
+
+7.建立df
+pd.DataFrame({'matchup':kobe.matchup, 'opponent':kobe.opponent})
+
+8.删除不需要的列
+drops = ['shot_id', 'team_id', 'team_name', 'shot_zone_area', 'shot_zone_range', 'shot_zone_basic', \
+         'matchup', 'lon', 'lat', 'seconds_remaining', 'minutes_remaining', \
+         'shot_distance', 'loc_x', 'loc_y', 'game_event_id', 'game_id', 'game_date']
+for drop in drops:
+    raw = raw.drop(drop, 1) # 删除不需要的列
