@@ -3,4 +3,28 @@
 ################################################# 2.数据预处理
 # 标签替换
 y = np.where(df["churn"]=='True', 1, 0)
+# 标准化
+from sklearn.preprocessing import StandarScaler
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
 ################################################# 3.尝试多种分类器算法
+# 这个函数超级方便可以随时换好多函数
+from sklearn.cross_validation import KFold
+def run_cv(X, y, clf_class, **kwargs) # 分类器， 参数 
+  kf = KFold(len(y), n_folds = 5, shuffle = True)
+  y_pred = y.copy()
+  
+  for train_index, test_index in kf:
+    X_train, X_test = X[train_index], X[test_index]
+    y_train = y[train_index]
+    clf = clf_class(**kwargs)
+    clf.fit(X_train, y_train)
+    y_pred[test_index] = clf.predict(X_test)
+  return y_pred
+  
+  from sklearn.svm import SVC
+  print('support vector machines :')
+  print("%.3f" % accuracy(y, run_cv(X , y, SVC)))
+  
+ 
+  
