@@ -130,5 +130,5 @@ print(pd.qcut(factors, 5).value_counts()) # 按照数值个数划分五等份
 '''
 # 7.报表可视化---a high level overview
 # 超级好用！！！
-pandas_profiling.ProfileReport(players)
+pandas_profiling.ProfileReport(players)  # 只有在在jupyter执行代码,只用下边的一行即可
 
